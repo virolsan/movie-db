@@ -1,0 +1,25 @@
+{
+  "name": "movie-db",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/virolsan/movie-db.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/virolsan/movie-db/issues"
+  },
+  "homepage": "https://github.com/virolsan/movie-db",
+  "dependencies": {
+    "body-parser": "^1.11.0",
+    "express": "^4.11.2",
+    "mongodb": "^1.4.30",
+    "serve-static": "^1.8.1"
+  }
+}
