@@ -1,13 +1,13 @@
 // muita paketteja
 // - socket.io
-// - serve-static
 //
 // sublime text plugin: jshint ...
 
 
 var express = require('express');
-var MongoClient = require('mongodb').MongoClient;
-var ObjectId = require('mongodb').ObjectId;
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
+var ObjectId = Schema.ObjectID;
 var Logger = require('mongodb').Logger;
 var bodyParser = require('body-parser');
 var serveStatic = require('serve-static');
@@ -18,23 +18,26 @@ app.use(bodyParser.json()); // lisää requestin käsittelijä -middleware
 app.use(serveStatic('client/', {'index': ['index.html', 'index.htm']})); // tarjoillaan client app
 
 
-MongoClient.connect('mongodb://127.0.0.1/moviedb', function (err, db) {
+mongoose.connect('mongodb://127.0.0.1/moviedb', function (err, db) {
 	if (err){
 		throw err;
 	}
 	init(db);
 });
 
-//Logger.setLevel('debug');
+Logger.setLevel('debug');
 //Logger.filter('class', ['Cursor']);
 
 function init(db) {
 
-	var collection = db.collection('movies'); // 'taulu'
+	var Movie = mongoose.model('movies', new Schema({ 
+		title: String, 
+		year: Number, 
+		actors: [{ name: String, _id: false }]
+	}));
 
-	// endpoint kaikkien elokuvien hakemiseen
 	app.get('/movies', function (req, res, next) { // next on seuraava middleware käsittelijä
-	  	collection.find().toArray(function (err, results) {
+	  	Movie.find(function (err, results) {
 	  		if (err) {
 				next(err); // HTTP 500
 				return;
@@ -45,7 +48,7 @@ function init(db) {
 	});
 
 	app.get('/search', function (req, res) {
-	  	collection.find({title: req.query.title}).toArray(function (err, results) {
+	  	Movie.find({'title': req.query.title}, function (err, results) {
 	  		if (err) {
 				next(err); // HTTP 500
 				return;
@@ -56,7 +59,7 @@ function init(db) {
 	});
 
 	app.get('/movies/:id', function (req, res) {
-	  	collection.findOne({_id: ObjectId(req.params.id)}, {}, function (err, result) {
+	  	Movie.findOne({'_id': req.params.id}, function (err, result) {
 	  		if (err) {
 				next(err); // HTTP 500
 				return;
@@ -67,15 +70,45 @@ function init(db) {
 	});
 
 	app.post('/movies', function (req, res) {
-		var newMovie = req.body;
+		console.log('saving ' + req.body);
+		var movie = new Movie(req.body);
 		
-		collection.insert(newMovie, function(err, newMovies, next) {
+		movie.save(function(err, data, next) {
 			if (err) {
 				next(err); // HTTP 500
 				return;
 			}
 
-		  	res.status(201).send(newMovies);
+		  	res.status(201).send(data);
+		});
+	});
+
+	app.delete('/movies/:id', function (req, res) {
+		console.log('deleting ' + req.params.id);
+
+		if (req.params.id) {
+			Movie.remove({_id: req.params.id}, function(err, next) {
+				if (err) {
+					next(err); // HTTP 500
+					return;
+				}
+
+			  	res.status(200).send();
+			});
+		}
+	});
+
+	// truncate movies
+	app.delete('/movies', function (req, res) {
+		console.log('truncating movies');
+
+		Movie.remove({}, function(err, next) {
+			if (err) {
+				next(err); // HTTP 500
+				return;
+			}
+
+		  	res.status(200).send();
 		});
 	});
 
@@ -84,7 +117,7 @@ function init(db) {
 	});
 }
 
-// asetetaan applikaatio kuuntelemaan porttia 9000 ja
+// asetetaan aplikaatio kuuntelemaan porttia 9000 ja
 // tulostetaan viesti kun se on valmis vastaanottamaan kyselyitä
 app.listen(9000, function () {
 	console.log('Movie API listening port 9000');

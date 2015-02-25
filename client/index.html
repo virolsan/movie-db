@@ -3,12 +3,16 @@
 <head>
 	<title>MovieDB</title>
 	<script src="vendor/angular/angular.js"></script>
+   	<script src="vendor/angular-route/angular-route.js"></script>
 	<script src="main.js"></script>
 </head>
 <body>
 	<div ng-controller="MovieCtrl">
 		<ul>
-			<li ng-repeat="movie in movies"><a ng-href="/movies/{{movie._id}}">{{movie.title}}</a></li>
+			<li ng-repeat="movie in movies">
+				<a ng-href="/movies/{{movie._id}}">{{movie.title}}</a>
+				<button ng-click="deleteMovie(movie._id)">Delete</button>
+			</li>
 		</ul>
 	</div>
 </body>
