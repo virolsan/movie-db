@@ -8,7 +8,7 @@
 <body>
 	<div ng-controller="MovieCtrl">
 		<ul>
-			<li ng-repeat="movie in movies">{{movie.title}}</li>
+			<li ng-repeat="movie in movies"><a ng-href="/movies/{{movie._id}}">{{movie.title}}</a></li>
 		</ul>
 	</div>
 </body>
