@@ -8,12 +8,10 @@ var express = require('express');
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectID;
-var Logger = require('mongodb').Logger;
 var bodyParser = require('body-parser');
 var serveStatic = require('serve-static');
 //var contentDisposition = require('content-disposition')
 var phantom = require('phantom');
-var NodePDF = require('nodepdf');
 
 var app = express(); // luodaan uusi express applikaatio
 app.use(bodyParser.json()); // lisää requestin käsittelijä -middleware
@@ -33,9 +31,6 @@ mongoose.connect('mongodb://127.0.0.1/moviedb', function (err, db) {
 	}
 	init(db);
 });
-
-Logger.setLevel('debug');
-//Logger.filter('class', ['Cursor']);
 
 function init(db) {
 
@@ -94,28 +89,6 @@ function init(db) {
 
 	app.get('/movies/:id/print', function(req, res) {
 		console.log('Printing ' + req.params.id);
-/*
-		var pdf = new NodePDF('http://localhost:9000', 'pdf/foo.pdf');
-		pdf.on('error', function(msg){
-		    console.log(msg);
-		});
-		 
-		pdf.on('done', function(pathToFile){
-		    console.log(pathToFile);
-		});
-
-		// use default options 
-		NodePDF.render('http://localhost:9000', 'pdf/foo.pdf', function(err, filePath){
-			if (err) {
-				next(err); // HTTP 500
-				return;
-			}
-
-		    console.log('Printed to ' + filePath);
-		    res.redirect(filePath);
-		});
-		res.redirect('/pdf/foo.pdf');
-*/
 
 		phantom.create(function(ph) { 
 			return ph.createPage(function(page) { 
@@ -132,7 +105,6 @@ function init(db) {
 				}); 
 			}); 
 		});
-
 	});
 
 
