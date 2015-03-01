@@ -18,6 +18,7 @@
   "homepage": "https://github.com/virolsan/movie-db",
   "dependencies": {
     "body-parser": "^1.11.0",
+    "content-disposition": "^0.5.0",
     "express": "^4.11.2",
     "mongodb": "^2.0",
     "mongoose": "^3.8.23",

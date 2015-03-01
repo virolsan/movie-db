@@ -50,7 +50,8 @@
 
 					$http.get('/movies/' + movieId + '/print').
 						success(function(data, status, headers, config) {
-					    	console.log('Print success ' + data);
+					    	// initiate file download
+                    		window.open('/movies/' + movieId + '/print', '_self', '');
 					  	}).
 					  	error(function(data, status, headers, config) {
 							console.log('Error: ' + status);

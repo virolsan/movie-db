@@ -11,6 +11,7 @@ var ObjectId = Schema.ObjectID;
 var Logger = require('mongodb').Logger;
 var bodyParser = require('body-parser');
 var serveStatic = require('serve-static');
+//var contentDisposition = require('content-disposition')
 var phantom = require('phantom');
 var NodePDF = require('nodepdf');
 
@@ -18,8 +19,13 @@ var app = express(); // luodaan uusi express applikaatio
 app.use(bodyParser.json()); // lisää requestin käsittelijä -middleware
 
 app.use(serveStatic('client/', {'index': ['index.html', 'index.htm']})); // tarjoillaan client app
-app.use(serveStatic('pdf/', {'foo': ['foo.pdf']})); // tarjoillaan pdf download
-
+/*
+app.use(serveStatic('pdf/', {'setHeaders': setHeaders})); // tarjoillaan pdf download
+// Set header to force download
+function setHeaders(res, path) {
+	console.log('setHeaders');
+  res.setHeader('Content-Disposition', contentDisposition(path))
+}*/
 
 mongoose.connect('mongodb://127.0.0.1/moviedb', function (err, db) {
 	if (err){
@@ -120,13 +126,13 @@ function init(db) {
 				return page.open("http://localhost:9000", function(status) { 
 					return page.render('pdf/foo.pdf', function(result) {
 						console.log(result);
-						res.redirect('/pdf/foo.pdf');
+						res.download('./pdf/foo.pdf', 'foo.pdf');
 						return ph.exit();
 					}); 
 				}); 
 			}); 
 		});
-		
+
 	});
 
 
