@@ -5,13 +5,13 @@ var Schema = mongoose.Schema;
 var ObjectId = Schema.ObjectID;
 
 var Movie = mongoose.model('movies', new Schema({ 
-	title: String, 
+	title: {type: String, required: true }, 
 	year: Number, 
 	actors: [{ name: String, _id: false }]
 }));
 
-var handlers = {
-	findAll: function(req, res, next) {
+var movies = {
+	list: function(req, res, next) {
 		Movie.find(function (err, results) {
 	  		if (err) {
 				next(err); // HTTP 500
@@ -21,7 +21,7 @@ var handlers = {
 			res.send(results);
 	  	});
 	},
-	search: function (req, res) {
+	search: function (req, res, next) {
 	  	Movie.find({'title': req.query.title}, function (err, results) {
 	  		if (err) {
 				next(err); // HTTP 500
@@ -31,7 +31,7 @@ var handlers = {
 			res.send(results);
 	  	});
 	},
-	get: function (req, res) {
+	get: function (req, res, next) {
 	  	Movie.findOne({'_id': req.params.id}, function (err, result) {
 	  		if (err) {
 				next(err); // HTTP 500
@@ -41,11 +41,11 @@ var handlers = {
 			res.send(result);
 	  	});
 	},
-	save: function (req, res) {
+	save: function (req, res, next) {
 		console.log('saving ' + req.body);
 		var movie = new Movie(req.body);
 		
-		movie.save(function(err, data, next) {
+		movie.save(function(err, data) {
 			if (err) {
 				next(err); // HTTP 500
 				return;
@@ -54,11 +54,11 @@ var handlers = {
 		  	res.status(201).send(data);
 		});
 	},
-	delete: function (req, res) {
+	delete: function (req, res, next) {
 		console.log('deleting ' + req.params.id);
 
 		if (req.params.id) {
-			Movie.remove({_id: req.params.id}, function(err, next) {
+			Movie.remove({_id: req.params.id}, function(err) {
 				if (err) {
 					next(err); // HTTP 500
 					return;
@@ -68,10 +68,10 @@ var handlers = {
 			});
 		}
 	},
-	deleteAll: function (req, res) {
+	deleteAll: function (req, res, next) {
 		console.log('truncating movies');
 
-		Movie.remove({}, function(err, next) {
+		Movie.remove({}, function(err) {
 			if (err) {
 				next(err); // HTTP 500
 				return;
@@ -103,18 +103,18 @@ var handlers = {
 
 module.exports.init = function(app) {
 
-	app.get('/movies', handlers.findAll);
+	app.get('/api/movies', movies.list);
 
-	app.get('/search', handlers.search);
+	app.get('/api/movies/search', movies.search);
 
-	app.get('/movies/:id', handlers.get);
+	app.get('/api/movies/:id', movies.get);
 
-	app.post('/movies', handlers.save);
+	app.post('/api/movies', movies.save);
 
-	app.delete('/movies/:id', handlers.delete);
+	app.delete('/api/movies/:id', movies.delete);
 
-	app.get('/movies/:id/print', handlers.print);
+	app.get('/api/movies/:id/print', movies.print);
 
-	app.delete('/movies', handlers.deleteAll);
+	app.delete('/api/movies', movies.deleteAll);
 
 }

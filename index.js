@@ -1,4 +1,5 @@
 var express = require('express');
+var logger = require('morgan');
 var bodyParser = require('body-parser');
 var serveStatic = require('serve-static');
 var mongoose = require('mongoose');
@@ -6,9 +7,11 @@ var mongoose = require('mongoose');
 
 var movieDB = require('./movie-db');
 
-var app = express(); // luodaan uusi express applikaatio
-app.use(bodyParser.json()); // lisää requestin käsittelijä -middleware
+var app = module.exports = express(); // luodaan uusi express applikaatio
 
+//require('express-debug')(app, {/* settings */});
+
+app.use(bodyParser.json()); // lisää requestin käsittelijä -middleware
 app.use(serveStatic('client/', {'index': ['index.html', 'index.htm']})); // tarjoillaan client app
 /*
 app.use(serveStatic('pdf/', {'setHeaders': setHeaders})); // tarjoillaan pdf download
@@ -17,6 +20,11 @@ function setHeaders(res, path) {
 	console.log('setHeaders');
   res.setHeader('Content-Disposition', contentDisposition(path))
 }*/
+
+/* istanbul ignore next */
+if (!module.parent) {
+  app.use(logger('dev'));
+}
 
 mongoose.connect('mongodb://127.0.0.1/moviedb', function (err, db) {
 	if (err){

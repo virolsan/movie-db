@@ -18,7 +18,7 @@
 					</thead>
 					<tbody>
 						<tr ng-repeat="movie in movies">
-							<td><a ng-href="/movies/{{movie._id}}">{{movie.title}}</a></td>
+							<td><a ng-href="/api/movies/{{movie._id}}">{{movie.title}}</a></td>
 						  	<td>{{movie.year}}</td>
 						  	<td><p ng-repeat="actor in movie.actors">{{actor.name}}</p></td>
 						  	<td><button ng-click="deleteMovie(movie._id)" class="btn btn-link">Delete</button>

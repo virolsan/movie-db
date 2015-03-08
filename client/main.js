@@ -10,7 +10,7 @@
 				$scope.loadMovies = function() {
 					console.log('loadMovies');
 
-					$http.get('/movies').
+					$http.get('/api/movies').
 						success(function(data, status, headers, config) {
 							//console.log('Data: ' + data);
 					    	$scope.movies = data;
@@ -24,7 +24,7 @@
 				$scope.addMovie = function() {
 					console.log('addMovie ' + $scope.data);
 
-					$http.post('/movies/', $scope.data).
+					$http.post('/api/movies/', $scope.data).
 						success(function(data, status, headers, config) {
 					    	$scope.data = {};
 					  	}).
@@ -36,7 +36,7 @@
 				$scope.deleteMovie = function(movieId) {
 					console.log('deleteMovie ' + movieId);
 
-					$http.delete('/movies/' + movieId).
+					$http.delete('/api/movies/' + movieId).
 						success(function(data, status, headers, config) {
 					    	$scope.loadMovies();
 					  	}).
@@ -48,10 +48,10 @@
 				$scope.printMovie = function(movieId) {
 					console.log('printMovie ' + movieId);
 
-					$http.get('/movies/' + movieId + '/print').
+					$http.get('/api/movies/' + movieId + '/print').
 						success(function(data, status, headers, config) {
 					    	// initiate file download
-                    		window.open('/movies/' + movieId + '/print', '_self', '');
+                    		window.open('/api/movies/' + movieId + '/print', '_self', '');
 					  	}).
 					  	error(function(data, status, headers, config) {
 							console.log('Error: ' + status);
