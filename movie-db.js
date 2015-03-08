@@ -10,7 +10,7 @@ var Movie = mongoose.model('movies', new Schema({
 	actors: [{ name: String, _id: false }]
 }));
 
-var movies = {
+var api = {
 	list: function(req, res, next) {
 		Movie.find(function (err, results) {
 	  		if (err) {
@@ -68,7 +68,7 @@ var movies = {
 			});
 		}
 	},
-	deleteAll: function (req, res, next) {
+	truncate: function (req, res, next) {
 		console.log('truncating movies');
 
 		Movie.remove({}, function(err) {
@@ -101,20 +101,22 @@ var movies = {
 	}
 }
 
+exports.api = api;
+
 module.exports.init = function(app) {
 
-	app.get('/api/movies', movies.list);
+	app.get('/api/movies', api.list);
 
-	app.get('/api/movies/search', movies.search);
+	app.get('/api/movies/search', api.search);
 
-	app.get('/api/movies/:id', movies.get);
+	app.get('/api/movies/:id', api.get);
 
-	app.post('/api/movies', movies.save);
+	app.post('/api/movies', api.save);
 
-	app.delete('/api/movies/:id', movies.delete);
+	app.delete('/api/movies/:id', api.delete);
 
-	app.get('/api/movies/:id/print', movies.print);
+	app.get('/api/movies/:id/print', api.print);
 
-	app.delete('/api/movies', movies.deleteAll);
+	app.delete('/api/movies', api.truncate);
 
 }
